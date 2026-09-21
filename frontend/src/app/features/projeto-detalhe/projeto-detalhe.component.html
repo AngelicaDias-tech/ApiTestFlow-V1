@@ -1,0 +1,131 @@
+@if (carregando()) {
+  <div class="state-panel">Carregando projeto...</div>
+} @else if (erro() || !projeto()) {
+  <div class="state-panel state-panel--erro">{{ erro() || 'Projeto não encontrado.' }}</div>
+} @else {
+  <div class="projeto-detalhe">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a routerLink="/">
+        <app-icon name="home" [size]="15"></app-icon>
+        Início
+      </a>
+      <app-icon name="chevron-right" [size]="13" class="breadcrumb__sep"></app-icon>
+      <a routerLink="/clientes">Clientes</a>
+      <app-icon name="chevron-right" [size]="13" class="breadcrumb__sep"></app-icon>
+      <a [routerLink]="['/clientes', projeto()!.cliente_id]">{{ projeto()!.cliente.nome }}</a>
+      <app-icon name="chevron-right" [size]="13" class="breadcrumb__sep"></app-icon>
+      <span class="breadcrumb__atual">{{ projeto()!.nome }}</span>
+    </nav>
+
+    <div class="header-row">
+      <div class="header-row__main">
+        <h1>{{ projeto()!.nome }}</h1>
+        <p>
+          Cliente: <strong>{{ projeto()!.cliente.nome }}</strong>
+          · Ambiente: {{ projeto()!.ambiente }}
+          @if (projeto()!.descricao) {
+            <br />
+            {{ projeto()!.descricao }}
+          }
+        </p>
+      </div>
+
+      <div class="header-row__stats">
+        <div class="stat">
+          <span class="stat__icon">
+            <app-icon name="file" [size]="18"></app-icon>
+          </span>
+          <span class="stat__text">
+            <span>Total de testes</span>
+            <strong>{{ testes().length }}</strong>
+          </span>
+        </div>
+
+        <div class="stat">
+          <span class="stat__icon">
+            <app-icon name="clock" [size]="18"></app-icon>
+          </span>
+          <span class="stat__text">
+            <span>Última execução</span>
+            <strong class="stat__sem-dados">Nenhuma execução realizada</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div>
+          <h2>Testes de API</h2>
+          <p>Gerencie os testes de API deste projeto. Selecione um teste para ver detalhes ou cadastre um novo.</p>
+        </div>
+
+        <app-button variant="primary" [routerLink]="['/clientes', projeto()!.cliente_id, 'projetos', projeto()!.id, 'novo-teste']">
+          <app-icon name="plus" [size]="18"></app-icon>
+          Novo teste
+        </app-button>
+      </div>
+
+      @if (testes().length > 0) {
+        <label class="search">
+          <app-icon name="search" [size]="17"></app-icon>
+          <input
+            type="search"
+            placeholder="Buscar testes..."
+            [ngModel]="termoBusca()"
+            (ngModelChange)="termoBusca.set($event)"
+          />
+        </label>
+      }
+
+      @if (testes().length === 0) {
+        <div class="empty-state">
+          <app-icon name="file" [size]="26"></app-icon>
+          <strong>Este projeto ainda não possui testes de API.</strong>
+          <app-button variant="primary" [routerLink]="['/clientes', projeto()!.cliente_id, 'projetos', projeto()!.id, 'novo-teste']">
+            <app-icon name="plus" [size]="18"></app-icon>
+            Novo teste
+          </app-button>
+        </div>
+      } @else if (testesFiltrados.length === 0) {
+        <div class="empty-state">Nenhum teste encontrado para a busca informada.</div>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome do teste / API</th>
+                <th>Descrição</th>
+                <th>Método</th>
+                <th>Ambiente</th>
+                <th>Status</th>
+                <th class="col-actions">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (teste of testesFiltrados; track teste.id) {
+                <tr class="row--clicavel" [routerLink]="['/clientes', projeto()!.cliente_id, 'projetos', projeto()!.id, 'testes', teste.id]">
+                  <td class="cell-strong">{{ teste.nome }}</td>
+                  <td class="cell-soft">{{ teste.descricao || '—' }}</td>
+                  <td><span class="metodo">{{ teste.metodo_http }}</span></td>
+                  <td class="cell-soft">{{ teste.ambiente || '—' }}</td>
+                  <td>
+                    <span class="status" [class.status--inativo]="teste.status === 'inativo'">
+                      {{ teste.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+                    </span>
+                  </td>
+                  <td class="col-actions">
+                    <span class="link-action">Ver</span>
+                    <app-icon name="chevron-right" [size]="16"></app-icon>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <span class="pagination__label">Mostrando {{ testesFiltrados.length }} de {{ testes().length }} testes</span>
+      }
+    </section>
+  </div>
+}

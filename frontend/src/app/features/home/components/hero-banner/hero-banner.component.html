@@ -1,0 +1,45 @@
+<section class="hero">
+  <div class="hero__intro">
+    <span class="hero__eyebrow">Bem-vindo ao</span>
+    <h2 class="hero__title"><strong>API</strong> TestFlow</h2>
+    <p class="hero__subtitle">Mais agilidade e qualidade nos testes de APIs dos nossos clientes.</p>
+
+    <app-button variant="primary" (buttonClick)="cadastrarCliente.emit()">
+      <app-icon name="plus" [size]="18"></app-icon>
+      Cadastrar cliente
+    </app-button>
+  </div>
+
+  <div class="hero__visual">
+    <div class="hero__panel">
+      <span class="hero__panel-glow hero__panel-glow--a" aria-hidden="true"></span>
+      <span class="hero__panel-glow hero__panel-glow--b" aria-hidden="true"></span>
+
+      <div class="hero__panel-copy">
+        <p class="hero__panel-eyebrow">
+          Testes mais confiáveis
+          <br />
+          para grandes conquistas
+        </p>
+        <i class="hero__panel-underline" aria-hidden="true"></i>
+        <p class="hero__panel-headline">
+          APIs seguras negócios que <strong>vão mais longe.</strong>
+        </p>
+      </div>
+    </div>
+
+    <aside class="hero__card">
+      @for (item of destaques; track item.titulo) {
+        <div class="hero__card-item">
+          <span class="hero__card-icon">
+            <app-icon [name]="item.icon" [size]="19"></app-icon>
+          </span>
+          <span class="hero__card-text">
+            <strong>{{ item.titulo }}</strong>
+            <span>{{ item.descricao }}</span>
+          </span>
+        </div>
+      }
+    </aside>
+  </div>
+</section>

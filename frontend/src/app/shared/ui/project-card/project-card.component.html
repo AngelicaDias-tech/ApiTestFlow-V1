@@ -1,0 +1,16 @@
+<a class="card" [routerLink]="['/clientes', projeto.cliente_id, 'projetos', projeto.id]">
+  <span class="card__header">
+    <span class="card__icon" [style.background]="corDestaque">{{ iniciais }}</span>
+    <span class="card__title">
+      <span class="card__name">{{ projeto.nome }}</span>
+      <span class="card__meta">{{ projeto.cliente.nome }} · {{ projeto.total_testes }} testes de API</span>
+    </span>
+  </span>
+
+  <span class="card__footer">
+    <span class="status" [class.status--inativo]="projeto.status === 'inativo'">
+      {{ projeto.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+    </span>
+    <app-icon name="chevron-right" [size]="16"></app-icon>
+  </span>
+</a>

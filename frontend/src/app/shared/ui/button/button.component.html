@@ -1,0 +1,3 @@
+<button [type]="type" class="btn" [disabled]="disabled" (click)="!disabled && buttonClick.emit()">
+  <ng-content></ng-content>
+</button>

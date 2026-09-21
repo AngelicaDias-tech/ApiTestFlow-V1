@@ -1,0 +1,56 @@
+:host {
+  display: inline-flex;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 44px;
+  padding: 0 1.15rem;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+:host(.variant-primary) .btn {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 10px 20px -10px rgba(163, 4, 126, 0.55);
+}
+
+:host(.variant-primary) .btn:hover {
+  background: var(--accent-dark);
+}
+
+:host(.variant-outline) .btn {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+:host(.variant-outline) .btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

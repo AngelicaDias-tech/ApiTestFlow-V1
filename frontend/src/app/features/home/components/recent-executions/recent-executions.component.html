@@ -1,0 +1,42 @@
+<section class="panel">
+  <div class="panel__head">
+    <h2>
+      <app-icon name="clock" [size]="18"></app-icon>
+      Últimas execuções
+    </h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Teste / API</th>
+          <th>Cliente</th>
+          <th>Data</th>
+          <th>Resultado</th>
+          <th class="align-right">Casos</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (execucao of execucoes; track execucao.id) {
+          <tr>
+            <td class="cell-strong">{{ execucao.testeNome }}</td>
+            <td>{{ execucao.clienteNome }}</td>
+            <td>{{ execucao.dataHora }}</td>
+            <td>
+              <span class="result" [class.result--falhou]="execucao.resultado === 'falhou'">
+                <i></i>
+                {{ execucao.resultado === 'sucesso' ? 'Sucesso' : 'Falhou' }}
+              </span>
+            </td>
+            <td class="align-right">{{ execucao.casos }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty-row">Nenhuma execução registrada ainda.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

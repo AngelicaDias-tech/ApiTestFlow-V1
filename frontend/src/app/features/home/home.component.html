@@ -1,0 +1,10 @@
+<div class="home">
+  <app-hero-banner (cadastrarCliente)="onCadastrarCliente()"></app-hero-banner>
+
+  <app-clients-overview [clientes]="clientesDestaque()" [carregando]="carregando()"></app-clients-overview>
+
+  <div class="home__lower">
+    <app-recent-executions class="home__executions" [execucoes]="execucoes()"></app-recent-executions>
+    <app-summary-panel class="home__summary" [resumo]="resumo()"></app-summary-panel>
+  </div>
+</div>

@@ -1,0 +1,443 @@
+@if (carregando()) {
+  <div class="state-panel">Carregando teste...</div>
+} @else if (!teste() || !projeto()) {
+  <div class="state-panel state-panel--erro">{{ erro() || 'Teste não encontrado.' }}</div>
+} @else {
+  <div class="teste-detalhe">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a routerLink="/">Início</a>
+      <span>›</span>
+      <a routerLink="/clientes">Clientes</a>
+      <span>›</span>
+      <a [routerLink]="['/clientes', clienteId]">{{ projeto()!.cliente.nome }}</a>
+      <span>›</span>
+      <a [routerLink]="['/clientes', clienteId, 'projetos', projeto()!.id]">{{ projeto()!.nome }}</a>
+      <span>›</span>
+      <span class="breadcrumb__atual">{{ teste()!.nome }}</span>
+    </nav>
+
+    <div class="titulo-row">
+      <h1>{{ teste()!.nome }}</h1>
+      <span class="status" [class.status--inativo]="teste()!.status === 'inativo'">
+        {{ teste()!.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+      </span>
+    </div>
+    <p class="subtitulo">Configuração do teste do projeto <strong>{{ projeto()!.nome }}</strong>.</p>
+
+    @if (erro()) {
+      <div class="alerta-erro">{{ erro() }}</div>
+    }
+
+    @if (salvoComSucesso()) {
+      <div class="alerta-sucesso">
+        <app-icon name="check-circle" [size]="16"></app-icon>
+        Configuração salva com sucesso.
+      </div>
+    }
+
+    <form class="form-card" [formGroup]="form" (ngSubmit)="salvar()">
+      <div class="panel__head">
+        <div class="panel__icon panel__icon--violet">
+          <app-icon name="settings" [size]="18"></app-icon>
+        </div>
+        <div>
+          <h2>Configuração do teste</h2>
+          <p>URL, método, autenticação, headers, body e validações.</p>
+        </div>
+
+        <div class="panel__actions">
+          <span class="badge badge--success">
+            <app-icon name="check" [size]="14"></app-icon>
+            Configurado
+          </span>
+          <button
+            type="button"
+            class="toggle"
+            [class.toggle--open]="configExpandida()"
+            (click)="configExpandida.set(!configExpandida())"
+            [attr.aria-expanded]="configExpandida()"
+            aria-label="Expandir configuração do teste"
+          >
+            <app-icon name="chevron-down" [size]="18"></app-icon>
+          </button>
+        </div>
+      </div>
+
+      @if (configExpandida()) {
+        <app-api-test-form-fields [form]="form" [possuiTokenConfigurado]="teste()!.possui_token"></app-api-test-form-fields>
+
+        <div class="form-acoes">
+          <app-button type="button" variant="outline" [routerLink]="['/clientes', clienteId, 'projetos', projeto()!.id]">
+            Voltar ao projeto
+          </app-button>
+          <app-button type="submit" variant="primary" [disabled]="salvando()">
+            {{ salvando() ? 'Salvando...' : 'Salvar alterações' }}
+          </app-button>
+        </div>
+      }
+    </form>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div class="panel__icon panel__icon--blue">
+          <app-icon name="file" [size]="18"></app-icon>
+        </div>
+        <div>
+          <h2>Massa de teste</h2>
+          <p>Importe os casos a partir do modelo oficial (aba "Atualizacoes" de modelo_atualizacao_request.xlsx).</p>
+        </div>
+      </div>
+
+      <div class="massa-upload">
+        <label
+          class="dropzone"
+          [class.dropzone--active]="arrastandoMassa()"
+          [class.dropzone--carregando]="importandoMassa()"
+          (dragover)="onDragOverMassa($event)"
+          (dragleave)="onDragLeaveMassa()"
+          (drop)="onDropMassa($event)"
+        >
+          <input type="file" accept=".xlsx" hidden (change)="onArquivoSelecionado($event)" />
+          <app-icon name="upload-cloud" [size]="28"></app-icon>
+          <strong>{{ importandoMassa() ? 'Importando massa...' : 'Arraste o arquivo da massa aqui' }}</strong>
+          <span>ou clique para selecionar</span>
+          <small>Formato aceito: .xlsx (modelo oficial)</small>
+        </label>
+
+        @if (massa()) {
+          <div class="file-card">
+            <div class="file-card__icon">
+              <app-icon name="file" [size]="19"></app-icon>
+            </div>
+            <div class="file-card__text">
+              <strong>{{ massa()!.nome_arquivo }}</strong>
+              <span>{{ massa()!.total_casos }} casos · {{ massa()!.total_linhas }} linhas</span>
+              <span class="file-card__data">Importada em {{ formatarData(massa()!.importado_em) }}</span>
+            </div>
+          </div>
+        } @else {
+          <div class="file-card file-card--vazio">
+            <app-icon name="file" [size]="19"></app-icon>
+            <span>Nenhuma massa importada para este teste ainda.</span>
+          </div>
+        }
+      </div>
+
+      <a class="download-link" [href]="urlModeloMassa" target="_blank" rel="noopener">
+        <app-icon name="download" [size]="16"></app-icon>
+        Baixar modelo de massa
+      </a>
+
+      @if (erroMassa()) {
+        <div class="alerta-erro">{{ erroMassa() }}</div>
+      }
+
+      @if (massa()) {
+        <div class="casos-titulo">Casos importados</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Caso</th>
+                <th>Alterações</th>
+                <th>Exemplo de path</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (caso of casosAgrupados(); track caso.casoId) {
+                <tr class="row--clicavel" (click)="alternarCaso(caso.casoId)">
+                  <td class="col-toggle">
+                    <app-icon
+                      name="chevron-down"
+                      [size]="14"
+                      [class.execucao__chevron--aberto]="casoExpandidoId() === caso.casoId"
+                    ></app-icon>
+                  </td>
+                  <td class="cell-strong">{{ caso.casoId }}</td>
+                  <td>{{ caso.linhas.length }}</td>
+                  <td class="cell-mono">{{ caso.linhas[0].path }}</td>
+                </tr>
+                @if (casoExpandidoId() === caso.casoId) {
+                  <tr class="linha-detalhe">
+                    <td colspan="4">
+                      <div class="table-wrap">
+                        <table class="tabela-linhas-massa">
+                          <thead>
+                            <tr>
+                              <th>path</th>
+                              <th>acao</th>
+                              <th>tipo</th>
+                              <th>novo_valor</th>
+                              <th>ativo</th>
+                              <th>observacao</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (linha of caso.linhas; track linha.id) {
+                              <tr>
+                                <td class="cell-mono">{{ linha.path }}</td>
+                                <td>{{ linha.acao }}</td>
+                                <td>{{ linha.tipo || '—' }}</td>
+                                <td class="cell-mono">{{ linha.novo_valor ?? '—' }}</td>
+                                <td>{{ linha.ativo ? 'sim' : 'não' }}</td>
+                                <td class="cell-obs">{{ linha.observacao || '—' }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div class="panel__icon panel__icon--green">
+          <app-icon name="check-circle" [size]="18"></app-icon>
+        </div>
+        <div>
+          <h2>Regras de validação</h2>
+          <p>Definem o que se espera da RESPONSE da API — a massa define a entrada (request), estas regras definem o critério de PASS/FAIL.</p>
+        </div>
+      </div>
+
+      @if (erroRegra()) {
+        <div class="alerta-erro">{{ erroRegra() }}</div>
+      }
+
+      @if (regrasAgrupadas().length === 0) {
+        <div class="empty-state">Nenhuma regra configurada — o resultado será decidido pelo status HTTP da resposta.</div>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Caso</th>
+                <th>Campo</th>
+                <th>Operador</th>
+                <th>Esperado</th>
+                <th>Descrição</th>
+                <th class="col-actions">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (grupo of regrasAgrupadas(); track grupo.rotulo) {
+                @for (regra of grupo.regras; track regra.id; let primeira = $first) {
+                  <tr>
+                    @if (primeira) {
+                      <td class="cell-strong" [attr.rowspan]="grupo.regras.length">{{ grupo.rotulo }}</td>
+                    }
+                    <td class="cell-mono">{{ regra.campo }}</td>
+                    <td>{{ regra.operador }}</td>
+                    <td class="cell-mono">{{ regra.valor_esperado ?? '—' }}</td>
+                    <td>{{ regra.descricao || '—' }}</td>
+                    <td class="col-actions">
+                      <button type="button" class="btn-debug" (click)="excluirRegra(regra.id)">
+                        <app-icon name="x" [size]="13"></app-icon>
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <form class="regra-form" [formGroup]="formRegra" (ngSubmit)="adicionarRegra()">
+        <div class="campo">
+          <label for="regra-caso">Caso (opcional)</label>
+          <input id="regra-caso" type="text" formControlName="caso_id" placeholder="Ex.: TC-DF-01 (vazio = todos os casos)" />
+        </div>
+        <div class="campo">
+          <label for="regra-campo">Campo da resposta *</label>
+          <input id="regra-campo" type="text" formControlName="campo" placeholder="Ex.: decisao" />
+        </div>
+        <div class="campo">
+          <label for="regra-operador">Operador *</label>
+          <select id="regra-operador" formControlName="operador">
+            @for (operador of operadoresValidacao; track operador) {
+              <option [value]="operador">{{ operador }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label for="regra-esperado">Valor esperado</label>
+          <input id="regra-esperado" type="text" formControlName="valor_esperado" placeholder="Ex.: Aprovado" />
+        </div>
+        <div class="campo campo--descricao">
+          <label for="regra-descricao">Descrição</label>
+          <input id="regra-descricao" type="text" formControlName="descricao" placeholder="O que esta regra valida?" />
+        </div>
+        <app-button type="submit" variant="primary" [disabled]="salvandoRegra()">
+          {{ salvandoRegra() ? 'Adicionando...' : 'Adicionar regra' }}
+        </app-button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div class="panel__icon panel__icon--pink">
+          <app-icon name="trending-up" [size]="18"></app-icon>
+        </div>
+        <div>
+          <h2>Resultados</h2>
+          <p>Execuções deste teste. Use o botão Debug para ver o response de uma linha.</p>
+        </div>
+
+        <div class="panel__actions">
+          <app-button type="button" variant="primary" [disabled]="executando()" (click)="executarTeste()">
+            {{ executando() ? 'Executando...' : 'Executar teste agora' }}
+          </app-button>
+        </div>
+      </div>
+
+      @if (erroExecucao()) {
+        <div class="alerta-erro">{{ erroExecucao() }}</div>
+      }
+
+      @if (execucoes().length === 0) {
+        <div class="empty-state">Nenhuma execução registrada.</div>
+      } @else {
+        @for (execucao of execucoes(); track execucao.id) {
+          <div class="execucao">
+            <button type="button" class="execucao__header" (click)="alternarExecucao(execucao.id)">
+              <span class="execucao__tipo" [class.execucao__tipo--demo]="execucao.tipo === 'demonstracao'">
+                {{ execucao.tipo === 'demonstracao' ? 'Demonstração' : 'Real' }}
+              </span>
+              <span class="execucao__data">{{ formatarData(execucao.executado_em) }}</span>
+              <span class="execucao__resumo">
+                {{ execucao.total_casos }} casos · {{ execucao.total_pass }} PASS · {{ execucao.total_fail }} FAIL
+              </span>
+              <app-icon
+                name="chevron-down"
+                [size]="16"
+                class="execucao__chevron"
+                [class.execucao__chevron--aberto]="execucaoExpandidaId() === execucao.id"
+              ></app-icon>
+            </button>
+
+            @if (execucaoExpandidaId() === execucao.id) {
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Caso ID</th>
+                      <th>Descrição</th>
+                      <th>Resultado</th>
+                      <th>HTTP</th>
+                      <th>Tempo</th>
+                      <th>Motivo</th>
+                      <th class="col-actions">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (resultado of execucao.resultados; track resultado.id) {
+                      <tr>
+                        <td class="cell-strong">{{ resultado.caso_id }}</td>
+                        <td class="cell-descricao">{{ descricaoDoCaso(resultado.caso_id) }}</td>
+                        <td>
+                          <span class="resultado" [class.resultado--fail]="resultado.resultado === 'FAIL'">
+                            <i></i>
+                            {{ resultado.resultado }}
+                          </span>
+                        </td>
+                        <td>{{ resultado.status_http ?? '—' }}</td>
+                        <td>{{ resultado.tempo_ms ? resultado.tempo_ms + 'ms' : '—' }}</td>
+                        <td class="cell-motivo">{{ resultado.motivo_falha || '—' }}</td>
+                        <td class="col-actions">
+                          <button type="button" class="btn-debug" (click)="alternarLinha(resultado.id)">
+                            <app-icon name="search" [size]="13"></app-icon>
+                            {{ linhaExpandidaId() === resultado.id ? 'Fechar' : 'Debug' }}
+                          </button>
+                        </td>
+                      </tr>
+                      @if (linhaExpandidaId() === resultado.id) {
+                        <tr class="linha-detalhe">
+                          <td colspan="7">
+                            <div class="detalhe-resumo">
+                              <h3>{{ resultado.caso_id }} — {{ descricaoDoCaso(resultado.caso_id) }}</h3>
+                              <span class="resultado" [class.resultado--fail]="resultado.resultado === 'FAIL'">
+                                <i></i>
+                                {{ resultado.resultado }}
+                              </span>
+                            </div>
+                            <div class="detalhe-grid">
+                              <div class="detalhe-bloco">
+                                <h4>Dados de entrada da massa</h4>
+                                @for (linha of linhasDoCaso(resultado.caso_id); track linha.id) {
+                                  <p class="detalhe-linha-massa">
+                                    <span class="cell-mono">{{ linha.path }}</span>
+                                    = {{ linha.novo_valor }}
+                                  </p>
+                                } @empty {
+                                  <p class="detalhe-vazio">Sem dados de massa para este caso.</p>
+                                }
+                              </div>
+
+                              <div class="detalhe-bloco">
+                                <h4>Request</h4>
+                                <p>{{ teste()!.metodo_http }} {{ teste()!.endpoint }}</p>
+                                @if (resultado.request_enviado) {
+                                  <pre>{{ resultado.request_enviado }}</pre>
+                                }
+                              </div>
+
+                              <div class="detalhe-bloco">
+                                <h4>Response</h4>
+                                <p>Status HTTP: {{ resultado.status_http ?? '—' }}</p>
+                                @if (resultado.response_recebido) {
+                                  <pre>{{ resultado.response_recebido }}</pre>
+                                }
+                              </div>
+
+                              <div class="detalhe-bloco">
+                                <h4>Validações</h4>
+                                @for (v of resultado.validacoes; track v.id) {
+                                  <div class="validacao-item" [class.validacao-item--fail]="!v.passou">
+                                    <p>
+                                      <strong>{{ v.campo }}</strong> {{ v.operador }}
+                                      @if (v.valor_esperado) { <span class="cell-mono">{{ v.valor_esperado }}</span> }
+                                    </p>
+                                    <p>Obtido: <span class="cell-mono">{{ v.valor_obtido ?? '—' }}</span></p>
+                                    <span class="resultado" [class.resultado--fail]="!v.passou">
+                                      <i></i>
+                                      {{ v.passou ? 'PASS' : 'FAIL' }}
+                                    </span>
+                                  </div>
+                                } @empty {
+                                  <p class="detalhe-vazio">
+                                    Nenhuma regra de validação configurada — resultado decidido pelo status HTTP.
+                                  </p>
+                                }
+                              </div>
+                            </div>
+
+                            <div class="detalhe-resultado-final" [class.detalhe-resultado-final--fail]="resultado.resultado === 'FAIL'">
+                              <strong>Resultado final: {{ resultado.resultado }}</strong>
+                              @if (resultado.motivo_falha) {
+                                <p class="motivo-falha">Motivo: {{ resultado.motivo_falha }}</p>
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+}

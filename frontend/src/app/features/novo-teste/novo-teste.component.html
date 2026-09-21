@@ -1,0 +1,51 @@
+@if (carregando()) {
+  <div class="state-panel">Carregando projeto...</div>
+} @else if (!projeto()) {
+  <div class="state-panel state-panel--erro">{{ erro() || 'Projeto não encontrado.' }}</div>
+} @else {
+  <div class="novo-teste">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a routerLink="/">Início</a>
+      <span>›</span>
+      <a routerLink="/clientes">Clientes</a>
+      <span>›</span>
+      <a [routerLink]="['/clientes', clienteId]">{{ projeto()!.cliente.nome }}</a>
+      <span>›</span>
+      <a [routerLink]="['/clientes', clienteId, 'projetos', projeto()!.id]">{{ projeto()!.nome }}</a>
+      <span>›</span>
+      <span class="breadcrumb__atual">Novo teste</span>
+    </nav>
+
+    <h1>Novo Teste</h1>
+    <p class="subtitulo">
+      Cadastre um teste de API para o projeto <strong>{{ projeto()!.nome }}</strong>.
+    </p>
+
+    @if (erro()) {
+      <div class="alerta-erro">{{ erro() }}</div>
+    }
+
+    <form class="form-card" [formGroup]="form" (ngSubmit)="salvar()">
+      <div class="panel__head">
+        <div class="panel__icon panel__icon--violet">
+          <app-icon name="settings" [size]="18"></app-icon>
+        </div>
+        <div>
+          <h2>Configuração do teste</h2>
+          <p>Identificação, request, autenticação e demais dados necessários para a chamada.</p>
+        </div>
+      </div>
+
+      <app-api-test-form-fields [form]="form"></app-api-test-form-fields>
+
+      <div class="form-acoes">
+        <app-button type="button" variant="outline" [routerLink]="['/clientes', clienteId, 'projetos', projeto()!.id]">
+          Cancelar
+        </app-button>
+        <app-button type="submit" variant="primary" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar teste' }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+}

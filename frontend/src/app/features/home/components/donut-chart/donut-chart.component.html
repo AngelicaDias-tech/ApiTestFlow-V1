@@ -1,0 +1,31 @@
+<div class="donut" [style.width.px]="size" [style.height.px]="size">
+  <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size">
+    <circle
+      [attr.cx]="center"
+      [attr.cy]="center"
+      [attr.r]="radius"
+      fill="none"
+      stroke="var(--border)"
+      [attr.stroke-width]="strokeWidth"
+    />
+    @for (segment of segments; track $index) {
+      @if (segment.percent > 0) {
+        <circle
+          [attr.cx]="center"
+          [attr.cy]="center"
+          [attr.r]="radius"
+          fill="none"
+          [attr.stroke]="segment.colorVar"
+          [attr.stroke-width]="strokeWidth"
+          stroke-linecap="round"
+          [attr.stroke-dasharray]="dashArrayFor(segment)"
+          [attr.stroke-dashoffset]="offsetFor($index)"
+          [attr.transform]="'rotate(-90 ' + center + ' ' + center + ')'"
+        />
+      }
+    }
+  </svg>
+  <div class="donut__label">
+    <ng-content></ng-content>
+  </div>
+</div>

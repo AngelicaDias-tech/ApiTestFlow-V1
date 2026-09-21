@@ -1,0 +1,87 @@
+// ---------------------------------------------------------------------------
+// API TestFlow — tokens globais de design
+// Paleta calibrada a partir do protótipo prototipos/home-inicio.png
+// (navy, magenta e verde extraídos por amostragem de pixel do próprio arquivo).
+// ---------------------------------------------------------------------------
+:root {
+  // marca
+  --navy: #0b2654;
+  --navy-deep: #081c40;
+  --navy-soft: #142f66;
+  --accent: #a3047e;
+  --accent-dark: #870469;
+  --accent-active: #8c2b86;
+  --accent-soft: #f5e3f0;
+
+  // semânticos
+  --success: #12a06e;
+  --success-soft: #e2f5ec;
+  --danger: #d81f61;
+  --danger-soft: #fce6ee;
+
+  // superfícies
+  --bg: #f2f4fa;
+  --surface: #ffffff;
+  --surface-alt: #f7f8fc;
+  --border: #e6e9f3;
+
+  // texto
+  --ink: #121a3f;
+  --ink-soft: #6b7280;
+  --ink-faint: #9aa1b8;
+  --ink-on-navy: #c7cee6;
+  --ink-on-navy-strong: #ffffff;
+
+  // forma
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 60, 0.04), 0 10px 24px -14px rgba(15, 23, 60, 0.16);
+  --shadow-float: 0 20px 45px -18px rgba(11, 38, 84, 0.35);
+
+  // layout
+  --sidebar-w: 224px;
+  --header-h: 76px;
+  --content-max: 1240px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--accent-soft);
+}

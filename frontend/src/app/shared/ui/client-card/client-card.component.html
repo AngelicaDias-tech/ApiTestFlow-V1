@@ -1,0 +1,15 @@
+<a class="card" [routerLink]="['/clientes', cliente.id]">
+  <span class="card__header">
+    <span class="card__icon" [style.background]="corDestaque">{{ iniciais }}</span>
+    <span class="card__title">
+      <span class="card__name">{{ cliente.nome }}</span>
+    </span>
+  </span>
+
+  <span class="card__footer">
+    <span class="status" [class.status--inativo]="cliente.status === 'inativo'">
+      {{ cliente.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+    </span>
+    <app-icon name="chevron-right" [size]="16"></app-icon>
+  </span>
+</a>

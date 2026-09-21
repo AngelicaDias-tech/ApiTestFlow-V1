@@ -1,0 +1,64 @@
+<section class="panel">
+  <div class="panel__head">
+    <h2>
+      <app-icon name="bar-chart" [size]="18"></app-icon>
+      Resumo geral
+    </h2>
+    <button type="button" class="period">
+      {{ resumo.periodoLabel }}
+      <app-icon name="chevron-down" [size]="15"></app-icon>
+    </button>
+  </div>
+
+  <div class="panel__body">
+    <app-donut-chart [segments]="segments" [size]="148" [strokeWidth]="18">
+      @if (resumo.totalExecucoes > 0) {
+        <strong>{{ resumo.percentualSucesso }}%</strong>
+        <span>sucesso</span>
+      } @else {
+        <strong class="sem-dados">—</strong>
+        <span>sem execuções</span>
+      }
+    </app-donut-chart>
+
+    <ul class="legend">
+      <li>
+        <i class="legend__dot legend__dot--success"></i>
+        Sucesso
+        <b>{{ resumo.totalSucesso }}</b>
+      </li>
+      <li>
+        <i class="legend__dot legend__dot--danger"></i>
+        Falhou
+        <b>{{ resumo.totalFalhas }}</b>
+      </li>
+      <li>
+        <i class="legend__dot legend__dot--total"></i>
+        Total
+        <b>{{ resumo.totalExecucoes }}</b>
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel__stats">
+    <div class="stat">
+      <span class="stat__icon">
+        <app-icon name="cube" [size]="18"></app-icon>
+      </span>
+      <span class="stat__text">
+        <strong>{{ resumo.totalTestesApi }}</strong>
+        <span>Testes de API</span>
+      </span>
+    </div>
+
+    <div class="stat">
+      <span class="stat__icon">
+        <app-icon name="users" [size]="18"></app-icon>
+      </span>
+      <span class="stat__text">
+        <strong>{{ resumo.totalClientesAtivos }}</strong>
+        <span>Clientes ativos</span>
+      </span>
+    </div>
+  </div>
+</section>

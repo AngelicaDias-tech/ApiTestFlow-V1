@@ -1,0 +1,72 @@
+@if (carregando()) {
+  <div class="state-panel">Carregando cliente...</div>
+} @else if (erro() || !cliente()) {
+  <div class="state-panel state-panel--erro">{{ erro() || 'Cliente não encontrado.' }}</div>
+} @else {
+  <div class="cliente-detalhe">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a routerLink="/">
+        <app-icon name="home" [size]="15"></app-icon>
+        Início
+      </a>
+      <app-icon name="chevron-right" [size]="13" class="breadcrumb__sep"></app-icon>
+      <a routerLink="/clientes">Clientes</a>
+      <app-icon name="chevron-right" [size]="13" class="breadcrumb__sep"></app-icon>
+      <span class="breadcrumb__atual">{{ cliente()!.nome }}</span>
+    </nav>
+
+    <div class="header-row">
+      <div class="header-row__main">
+        <h1>{{ cliente()!.nome }}</h1>
+        <span class="status" [class.status--inativo]="cliente()!.status === 'inativo'">
+          {{ cliente()!.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+        </span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel__head">
+        <div>
+          <h2>Projetos</h2>
+          <p>Projetos de teste de API deste cliente.</p>
+        </div>
+
+        <app-button variant="primary" [routerLink]="['/clientes', cliente()!.id, 'projetos', 'novo']">
+          <app-icon name="plus" [size]="18"></app-icon>
+          Cadastrar projeto
+        </app-button>
+      </div>
+
+      @if (projetos().length > 0) {
+        <label class="search">
+          <app-icon name="search" [size]="17"></app-icon>
+          <input
+            type="search"
+            placeholder="Buscar projeto..."
+            [ngModel]="termoBusca()"
+            (ngModelChange)="termoBusca.set($event)"
+          />
+        </label>
+      }
+
+      @if (projetos().length === 0) {
+        <div class="empty-state">
+          <app-icon name="cube" [size]="26"></app-icon>
+          <strong>Este cliente ainda não possui projetos cadastrados.</strong>
+          <app-button variant="primary" [routerLink]="['/clientes', cliente()!.id, 'projetos', 'novo']">
+            <app-icon name="plus" [size]="18"></app-icon>
+            Cadastrar projeto
+          </app-button>
+        </div>
+      } @else if (projetosFiltrados.length === 0) {
+        <div class="empty-state">Nenhum projeto encontrado para a busca informada.</div>
+      } @else {
+        <div class="grid">
+          @for (projeto of projetosFiltrados; track projeto.id) {
+            <app-project-card [projeto]="projeto"></app-project-card>
+          }
+        </div>
+      }
+    </section>
+  </div>
+}

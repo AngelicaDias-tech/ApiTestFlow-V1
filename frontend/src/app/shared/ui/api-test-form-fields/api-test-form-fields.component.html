@@ -1,0 +1,124 @@
+<div class="form-fields" [formGroup]="form">
+  <section class="form-section">
+    <h3>
+      <app-icon name="file" [size]="16"></app-icon>
+      Identificação
+    </h3>
+
+    <div class="campo">
+      <label for="nome">Nome do teste *</label>
+      <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Consulta de crédito" />
+      @if (form.controls.nome.invalid && form.controls.nome.touched) {
+        <span class="erro-campo">Informe o nome do teste.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" formControlName="descricao" rows="2" placeholder="O que este teste valida?"></textarea>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <h3>
+      <app-icon name="settings" [size]="16"></app-icon>
+      Request
+    </h3>
+
+    <div class="campo-grupo">
+      <div class="campo campo--endpoint">
+        <label for="endpoint">Endpoint *</label>
+        <input id="endpoint" type="text" formControlName="endpoint" placeholder="/credito/v1/analise" />
+        @if (form.controls.endpoint.invalid && form.controls.endpoint.touched) {
+          <span class="erro-campo">Informe o endpoint da API.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="metodo">Método HTTP</label>
+        <select id="metodo" formControlName="metodo_http">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="PATCH">PATCH</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="ambiente">Ambiente</label>
+      <input id="ambiente" type="text" formControlName="ambiente" placeholder="homologacao" />
+    </div>
+
+    <div class="campo">
+      <label for="headers">Headers</label>
+      <textarea id="headers" formControlName="headers" rows="2" placeholder="Content-Type: application/json"></textarea>
+    </div>
+
+    <div class="campo-grupo">
+      <div class="campo">
+        <label for="query-params">Query parameters</label>
+        <textarea
+          id="query-params"
+          formControlName="query_params"
+          rows="2"
+          placeholder="cpf=12345678900&tipo=pf"
+        ></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="path-params">Path parameters</label>
+        <textarea id="path-params" formControlName="path_params" rows="2" placeholder="id=123"></textarea>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="body">Body / Payload</label>
+      <textarea id="body" formControlName="body" rows="3" placeholder='&#123;"cpf": "12345678900"&#125;'></textarea>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <h3>
+      <app-icon name="shield" [size]="16"></app-icon>
+      Autenticação
+    </h3>
+
+    <div class="campo-grupo">
+      <div class="campo">
+        <label for="auth-type">Tipo de autenticação</label>
+        <select id="auth-type" formControlName="auth_type">
+          <option value="nenhuma">Nenhuma</option>
+          <option value="bearer_token">Bearer Token</option>
+          <option value="api_key">API Key</option>
+          <option value="basic">Basic Auth</option>
+        </select>
+      </div>
+
+      @if (form.controls.auth_type.value !== 'nenhuma') {
+        <div class="campo">
+          <label for="auth-token">Token / credencial</label>
+          <input
+            id="auth-token"
+            type="password"
+            formControlName="auth_token"
+            [placeholder]="possuiTokenConfigurado ? '•••••••• (deixe em branco para manter o atual)' : '••••••••'"
+          />
+        </div>
+      }
+    </div>
+
+    @if (form.controls.auth_type.value !== 'nenhuma') {
+      <span class="hint">
+        @if (possuiTokenConfigurado) {
+          Já existe um token salvo para este teste — ele nunca é exibido de volta. Deixe o campo
+          em branco para mantê-lo, ou digite um novo valor para substituí-lo.
+        } @else {
+          O token nunca é devolvido pela API depois de salvo (nem em texto pleno, nem mascarado) —
+          só fica disponível internamente no backend para montar a chamada real.
+        }
+      </span>
+    }
+  </section>
+</div>

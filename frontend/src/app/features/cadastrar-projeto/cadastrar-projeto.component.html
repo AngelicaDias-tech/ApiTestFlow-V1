@@ -1,0 +1,79 @@
+@if (carregando()) {
+  <div class="state-panel">Carregando cliente...</div>
+} @else if (!cliente()) {
+  <div class="state-panel state-panel--erro">{{ erro() || 'Cliente não encontrado.' }}</div>
+} @else {
+  <div class="cadastrar-projeto">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a routerLink="/">Início</a>
+      <span>›</span>
+      <a routerLink="/clientes">Clientes</a>
+      <span>›</span>
+      <a [routerLink]="['/clientes', cliente()!.id]">{{ cliente()!.nome }}</a>
+      <span>›</span>
+      <span class="breadcrumb__atual">Cadastrar Projeto</span>
+    </nav>
+
+    <h1>Cadastrar Projeto</h1>
+    <p class="subtitulo">
+      Novo projeto de testes de API para o cliente <strong>{{ cliente()!.nome }}</strong>.
+    </p>
+
+    @if (erro()) {
+      <div class="alerta-erro">{{ erro() }}</div>
+    }
+
+    <form class="form-card" [formGroup]="form" (ngSubmit)="salvar()">
+      <div class="campo">
+        <label>Cliente</label>
+        <div class="campo-fixo">{{ cliente()!.nome }}</div>
+      </div>
+
+      <div class="campo">
+        <label for="nome">Nome do projeto *</label>
+        <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Análise de Crédito" />
+        @if (form.controls.nome.invalid && form.controls.nome.touched) {
+          <span class="erro-campo">Informe o nome do projeto.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="descricao">Descrição</label>
+        <textarea
+          id="descricao"
+          formControlName="descricao"
+          rows="3"
+          placeholder="Descreva o objetivo deste projeto de testes."
+        ></textarea>
+      </div>
+
+      <div class="campo-grupo">
+        <div class="campo">
+          <label for="ambiente">Ambiente</label>
+          <select id="ambiente" formControlName="ambiente">
+            <option value="desenvolvimento">Desenvolvimento</option>
+            <option value="homologacao">Homologação</option>
+            <option value="producao">Produção</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-acoes">
+        <app-button type="button" variant="outline" [routerLink]="['/clientes', cliente()!.id]">
+          Cancelar
+        </app-button>
+        <app-button type="submit" variant="primary" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : 'Salvar projeto' }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+}

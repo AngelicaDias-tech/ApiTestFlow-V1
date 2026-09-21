@@ -1,0 +1,25 @@
+<section class="section">
+  <div class="section__head">
+    <h2>Clientes</h2>
+    <a class="link" routerLink="/clientes">
+      Ver todos
+      <app-icon name="chevron-right" [size]="16"></app-icon>
+    </a>
+  </div>
+
+  @if (carregando) {
+    <div class="empty-state">Carregando clientes...</div>
+  } @else if (clientes.length === 0) {
+    <div class="empty-state">
+      <app-icon name="users" [size]="26"></app-icon>
+      <span>Você ainda não possui clientes cadastrados.</span>
+      <a class="link" routerLink="/clientes/novo">Cadastrar o primeiro cliente</a>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (cliente of clientes; track cliente.id) {
+        <app-client-card [cliente]="cliente"></app-client-card>
+      }
+    </div>
+  }
+</section>

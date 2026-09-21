@@ -1,0 +1,26 @@
+<header class="topbar">
+  <div class="topbar__title">
+    <h1>API TestFlow</h1>
+    <p>Plataforma de testes automatizados de APIs</p>
+  </div>
+
+  <div class="topbar__actions">
+    <label class="search">
+      <app-icon name="search" [size]="18"></app-icon>
+      <input type="search" placeholder="Buscar cliente ou teste..." />
+    </label>
+
+    <button type="button" class="bell" aria-label="Notificações">
+      <app-icon name="bell" [size]="20"></app-icon>
+      @if (notificacoesNaoLidas > 0) {
+        <span class="bell__badge">{{ notificacoesNaoLidas }}</span>
+      }
+    </button>
+
+    <div class="tagline">
+      <span>Pessoas criam</span>
+      <span>o extraordinário</span>
+      <i class="tagline__underline" aria-hidden="true"></i>
+    </div>
+  </div>
+</header>

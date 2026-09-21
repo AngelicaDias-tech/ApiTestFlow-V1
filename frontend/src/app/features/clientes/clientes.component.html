@@ -1,0 +1,49 @@
+<div class="clientes">
+  <div class="clientes__header">
+    <div>
+      <h1>Clientes</h1>
+      <p>Clientes cadastrados. Entre em um cliente para ver seus projetos e testes de API.</p>
+    </div>
+
+    <app-button variant="primary" [routerLink]="['/clientes', 'novo']">
+      <app-icon name="plus" [size]="18"></app-icon>
+      Novo cliente
+    </app-button>
+  </div>
+
+  @if (!carregando() && clientes().length > 0) {
+    <label class="search">
+      <app-icon name="search" [size]="17"></app-icon>
+      <input
+        type="search"
+        placeholder="Buscar por cliente..."
+        [ngModel]="termoBusca()"
+        (ngModelChange)="termoBusca.set($event)"
+      />
+    </label>
+  }
+
+  @if (carregando()) {
+    <div class="state-panel">Carregando clientes...</div>
+  } @else if (erro()) {
+    <div class="state-panel state-panel--erro">{{ erro() }}</div>
+  } @else if (clientes().length === 0) {
+    <div class="state-panel">
+      <app-icon name="users" [size]="28"></app-icon>
+      <strong>Você ainda não possui clientes cadastrados.</strong>
+      <span>Cadastre o primeiro cliente para começar a organizar projetos e testes de API.</span>
+      <app-button variant="primary" [routerLink]="['/clientes', 'novo']">
+        <app-icon name="plus" [size]="18"></app-icon>
+        Novo cliente
+      </app-button>
+    </div>
+  } @else if (clientesFiltrados.length === 0) {
+    <div class="state-panel">Nenhum cliente encontrado para a busca informada.</div>
+  } @else {
+    <div class="grid">
+      @for (cliente of clientesFiltrados; track cliente.id) {
+        <app-client-card [cliente]="cliente"></app-client-card>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,49 @@
+<aside class="sidebar">
+  <div class="brand">
+    <img class="brand__logo" src="images/logo-serasa-experian.png" alt="Serasa Experian" />
+  </div>
+
+  <nav class="nav">
+    @for (item of navItems; track item.label) {
+      @if (item.route) {
+        <a
+          class="nav__item"
+          [routerLink]="item.route"
+          routerLinkActive="nav__item--active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+        >
+          <app-icon [name]="item.icon" [size]="19"></app-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      } @else {
+        <button type="button" class="nav__item" disabled>
+          <app-icon [name]="item.icon" [size]="19"></app-icon>
+          <span>{{ item.label }}</span>
+        </button>
+      }
+    }
+  </nav>
+
+  <div class="decor" aria-hidden="true">
+    <span class="decor__shape decor__shape--blue"></span>
+    <span class="decor__shape decor__shape--violet"></span>
+    <span class="decor__shape decor__shape--magenta"></span>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="sidebar__footer">
+    <div class="user">
+      <span class="user__avatar">{{ usuario.iniciais }}</span>
+      <span class="user__info">
+        <span class="user__name">{{ usuario.nome }}</span>
+        <span class="user__company">{{ usuario.empresa }}</span>
+      </span>
+    </div>
+
+    <button type="button" class="signout">
+      <app-icon name="logout" [size]="17"></app-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+</aside>

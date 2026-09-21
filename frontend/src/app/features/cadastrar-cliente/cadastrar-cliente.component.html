@@ -1,0 +1,41 @@
+<div class="cadastrar-cliente">
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a routerLink="/">Início</a>
+    <span>›</span>
+    <a routerLink="/clientes">Clientes</a>
+    <span>›</span>
+    <span class="breadcrumb__atual">Cadastrar Cliente</span>
+  </nav>
+
+  <h1>Cadastrar Cliente</h1>
+  <p class="subtitulo">Um cliente pode ter um ou mais projetos de teste de API.</p>
+
+  @if (erro()) {
+    <div class="alerta-erro">{{ erro() }}</div>
+  }
+
+  <form class="form-card" [formGroup]="form" (ngSubmit)="salvar()">
+    <div class="campo">
+      <label for="nome">Nome do cliente *</label>
+      <input id="nome" type="text" formControlName="nome" placeholder="Ex.: Porto Seguro" />
+      @if (form.controls.nome.invalid && form.controls.nome.touched) {
+        <span class="erro-campo">Informe o nome do cliente.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="status">Status</label>
+      <select id="status" formControlName="status">
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+    </div>
+
+    <div class="form-acoes">
+      <app-button type="button" variant="outline" routerLink="/clientes">Cancelar</app-button>
+      <app-button type="submit" variant="primary" [disabled]="salvando()">
+        {{ salvando() ? 'Salvando...' : 'Salvar cliente' }}
+      </app-button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,35 @@
+# ==== Backend (Python/FastAPI) ====
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+backend/.venv/
+backend/venv/
+*.db
+backend/.pytest_cache/
+backend/**/.pytest_cache/
+*.egg-info/
+
+# ==== Frontend (Angular) ====
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/tmp/
+frontend/out-tsc/
+npm-debug.log*
+yarn-error.log*
+frontend/coverage/
+
+# ==== Editores / SO ====
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ==== Variáveis de ambiente / segredos ====
+.env
+.env.*
+!.env.example

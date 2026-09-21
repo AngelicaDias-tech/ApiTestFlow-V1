@@ -1,0 +1,18 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.home__lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 1.6rem;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .home__lower {
+    grid-template-columns: 1fr;
+  }
+}
